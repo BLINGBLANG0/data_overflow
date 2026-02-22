@@ -12,9 +12,6 @@ dist/
 build/
 *.egg
 
-# Model artifacts
-model.pkl
-
 # Data files
 *.csv
 
