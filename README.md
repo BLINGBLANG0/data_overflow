@@ -30,6 +30,31 @@ uvicorn api.main:app --reload
 # Open http://localhost:8000
 ```
 
+## Deployment (Render)
+
+- Live app: https://data-overfloww.onrender.com
+- Health check: https://data-overfloww.onrender.com/health
+- API docs: https://data-overfloww.onrender.com/docs
+
+### Render Service Configuration
+
+This project is deployed to Render as a **Web Service** using Docker.
+
+- Runtime: `docker`
+- Plan: `free`
+- Service name: `insurance-recommender`
+- Dockerfile: `./Dockerfile`
+- Health check path: `/health`
+- Environment variable: `PYTHONUNBUFFERED=1`
+
+### Deploy on Render
+
+1. Push this repository to GitHub.
+2. In Render, create a new **Web Service** and connect the repo.
+3. Render will detect `render.yaml` (Blueprint) and apply the service settings automatically.
+4. Deploy the service.
+5. Open the deployed app at `https://data-overfloww.onrender.com`.
+
 ## Project Structure
 
 ```
