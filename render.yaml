@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: insurance-recommender
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /health

@@ -1,0 +1,69 @@
+/* ── Reset & Base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+    --bg:#f1f5f9;--surface:#fff;--text:#1e293b;--muted:#64748b;
+    --primary:#3b82f6;--primary-hover:#2563eb;--border:#e2e8f0;
+    --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.08);
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.container{max-width:1200px;margin:0 auto;padding:1.5rem}
+
+/* ── Header ── */
+header{text-align:center;margin-bottom:2rem}
+.logo{display:flex;align-items:center;justify-content:center;gap:.5rem;color:var(--primary)}
+.logo h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:var(--muted);font-size:.9rem;margin:.25rem 0 .75rem}
+.badge{display:inline-block;padding:.25rem .75rem;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge.loading{background:#fef3c7;color:#92400e}
+.badge.healthy{background:#d1fae5;color:#065f46}
+.badge.error{background:#fee2e2;color:#991b1b}
+
+/* ── Layout ── */
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow)}
+.card h2{font-size:1.1rem;margin-bottom:1rem;color:var(--text)}
+
+/* ── Form ── */
+fieldset{border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1rem}
+legend{font-weight:600;font-size:.85rem;color:var(--primary);padding:0 .5rem}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem}
+.field{display:flex;flex-direction:column}
+.field label{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.03em}
+.field input,.field select{
+    padding:.45rem .6rem;border:1px solid var(--border);border-radius:6px;font-size:.85rem;
+    background:#f8fafc;transition:border .15s;color:var(--text);
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+button[type="submit"]{
+    width:100%;padding:.7rem;margin-top:.5rem;border:none;border-radius:8px;
+    background:var(--primary);color:#fff;font-size:.95rem;font-weight:600;
+    cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+button[type="submit"]:hover{background:var(--primary-hover)}
+button:disabled{opacity:.6;cursor:not-allowed}
+
+/* ── Results ── */
+.placeholder{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.placeholder p{margin-top:.75rem;font-size:.9rem}
+.result-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.bundle-number{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;flex-shrink:0}
+.bundle-info{display:flex;flex-direction:column}
+.bundle-label{font-size:1.05rem;font-weight:700}
+.confidence{font-size:.85rem;color:var(--muted)}
+.results-card h3{font-size:.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem}
+
+/* ── Probability Bars ── */
+.prob-bars{display:flex;flex-direction:column;gap:.4rem}
+.prob-row{display:flex;align-items:center;gap:.5rem;opacity:.65;transition:opacity .15s}
+.prob-row.active{opacity:1;font-weight:600}
+.prob-label{width:24px;font-size:.75rem;text-align:right;color:var(--muted);flex-shrink:0}
+.prob-track{flex:1;height:16px;background:#f1f5f9;border-radius:4px;overflow:hidden}
+.prob-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.prob-val{width:42px;font-size:.75rem;text-align:right;color:var(--muted);flex-shrink:0}
+.latency-info{margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted);text-align:center}
+
+/* ── Footer ── */
+footer{text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}

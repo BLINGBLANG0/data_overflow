@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Bundle Recommender</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <h1>Insurance Bundle Recommender</h1>
+            </div>
+            <p class="subtitle">ML-powered coverage bundle prediction using LightGBM</p>
+            <div id="health-badge" class="badge loading">Connecting...</div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Form -->
+            <section class="card form-card">
+                <h2>Policy Information</h2>
+                <form id="predict-form">
+                    <!-- Personal -->
+                    <fieldset>
+                        <legend>Policyholder</legend>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="User_ID">User ID</label>
+                                <input type="text" id="User_ID" name="User_ID" value="USR_12345" required>
+                            </div>
+                            <div class="field">
+                                <label for="Employment_Status">Employment</label>
+                                <select id="Employment_Status" name="Employment_Status">
+                                    <option value="Employed_FullTime">Full-Time</option>
+                                    <option value="Employed_PartTime">Part-Time</option>
+                                    <option value="Self_Employed">Self-Employed</option>
+                                    <option value="Retired">Retired</option>
+                                    <option value="Unemployed">Unemployed</option>
+                                    <option value="Student">Student</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Estimated_Annual_Income">Annual Income ($)</label>
+                                <input type="number" id="Estimated_Annual_Income" name="Estimated_Annual_Income" value="35000" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Region_Code">Region</label>
+                                <input type="text" id="Region_Code" name="Region_Code" value="ABJ" placeholder="e.g. ABJ, PRT">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Dependents -->
+                    <fieldset>
+                        <legend>Dependents</legend>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="Adult_Dependents">Adults</label>
+                                <input type="number" id="Adult_Dependents" name="Adult_Dependents" value="2" min="0" max="20">
+                            </div>
+                            <div class="field">
+                                <label for="Child_Dependents">Children</label>
+                                <input type="number" id="Child_Dependents" name="Child_Dependents" value="1" min="0" max="20">
+                            </div>
+                            <div class="field">
+                                <label for="Infant_Dependents">Infants</label>
+                                <input type="number" id="Infant_Dependents" name="Infant_Dependents" value="0" min="0" max="10">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Policy Details -->
+                    <fieldset>
+                        <legend>Policy Details</legend>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="Policy_Start_Year">Start Year</label>
+                                <input type="number" id="Policy_Start_Year" name="Policy_Start_Year" value="2016" min="2010" max="2030">
+                            </div>
+                            <div class="field">
+                                <label for="Policy_Start_Month">Start Month</label>
+                                <select id="Policy_Start_Month" name="Policy_Start_Month">
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March" selected>March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Policy_Start_Week">Week</label>
+                                <input type="number" id="Policy_Start_Week" name="Policy_Start_Week" value="12" min="1" max="52">
+                            </div>
+                            <div class="field">
+                                <label for="Policy_Start_Day">Day</label>
+                                <input type="number" id="Policy_Start_Day" name="Policy_Start_Day" value="15" min="1" max="31">
+                            </div>
+                            <div class="field">
+                                <label for="Deductible_Tier">Deductible Tier</label>
+                                <select id="Deductible_Tier" name="Deductible_Tier">
+                                    <option value="Tier_1_High_Ded">Tier 1 - High</option>
+                                    <option value="Tier_2_Moderate_Ded" selected>Tier 2 - Moderate</option>
+                                    <option value="Tier_3_Low_Ded">Tier 3 - Low</option>
+                                    <option value="Tier_4_Zero_Ded">Tier 4 - Zero</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Payment_Schedule">Payment</label>
+                                <select id="Payment_Schedule" name="Payment_Schedule">
+                                    <option value="Monthly_EFT" selected>Monthly EFT</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Annual_Prepay">Annual Prepay</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- History -->
+                    <fieldset>
+                        <legend>Policy History</legend>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="Existing_Policyholder">Existing?</label>
+                                <select id="Existing_Policyholder" name="Existing_Policyholder">
+                                    <option value="0" selected>No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Previous_Policy_Duration_Months">Prev Duration (mo)</label>
+                                <input type="number" id="Previous_Policy_Duration_Months" name="Previous_Policy_Duration_Months" value="3" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Previous_Claims_Filed">Claims Filed</label>
+                                <input type="number" id="Previous_Claims_Filed" name="Previous_Claims_Filed" value="0" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Years_Without_Claims">Yrs No Claims</label>
+                                <input type="number" id="Years_Without_Claims" name="Years_Without_Claims" value="0" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Policy_Cancelled_Post_Purchase">Cancelled?</label>
+                                <select id="Policy_Cancelled_Post_Purchase" name="Policy_Cancelled_Post_Purchase">
+                                    <option value="0" selected>No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Policy_Amendments_Count">Amendments</label>
+                                <input type="number" id="Policy_Amendments_Count" name="Policy_Amendments_Count" value="1" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Grace_Period_Extensions">Grace Ext.</label>
+                                <input type="number" id="Grace_Period_Extensions" name="Grace_Period_Extensions" value="0" min="0">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Vehicle & Acquisition -->
+                    <fieldset>
+                        <legend>Coverage & Acquisition</legend>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="Vehicles_on_Policy">Vehicles</label>
+                                <input type="number" id="Vehicles_on_Policy" name="Vehicles_on_Policy" value="1" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Custom_Riders_Requested">Custom Riders</label>
+                                <input type="number" id="Custom_Riders_Requested" name="Custom_Riders_Requested" value="0" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Underwriting_Processing_Days">Underwriting Days</label>
+                                <input type="number" id="Underwriting_Processing_Days" name="Underwriting_Processing_Days" value="3" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Days_Since_Quote">Days Since Quote</label>
+                                <input type="number" id="Days_Since_Quote" name="Days_Since_Quote" value="5" min="0">
+                            </div>
+                            <div class="field">
+                                <label for="Acquisition_Channel">Channel</label>
+                                <select id="Acquisition_Channel" name="Acquisition_Channel">
+                                    <option value="Direct_Website" selected>Direct Website</option>
+                                    <option value="Broker_Referral">Broker Referral</option>
+                                    <option value="Agent_Direct">Agent Direct</option>
+                                    <option value="Corporate_Partnership">Corporate</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="Broker_Agency_Type">Broker Type</label>
+                                <select id="Broker_Agency_Type" name="Broker_Agency_Type">
+                                    <option value="National_Corporate" selected>National Corporate</option>
+                                    <option value="Regional_Agency">Regional Agency</option>
+                                    <option value="Independent_Broker">Independent</option>
+                                    <option value="Online_Platform">Online Platform</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <button type="submit" id="predict-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Predict Bundle
+                    </button>
+                </form>
+            </section>
+
+            <!-- Results Panel -->
+            <section class="card results-card">
+                <h2>Prediction Result</h2>
+                <div id="result-placeholder" class="placeholder">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <p>Fill in the form and click <strong>Predict Bundle</strong></p>
+                </div>
+                <div id="result-content" style="display:none;">
+                    <div class="result-header">
+                        <div class="bundle-number" id="bundle-number">-</div>
+                        <div class="bundle-info">
+                            <span class="bundle-label" id="bundle-label">-</span>
+                            <span class="confidence" id="confidence">-</span>
+                        </div>
+                    </div>
+
+                    <h3>Probability Distribution</h3>
+                    <div id="prob-bars" class="prob-bars"></div>
+
+                    <div class="latency-info" id="latency-info"></div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>DataQuest Hackathon &mdash; Insurance Recommender System &mdash; Built with LightGBM + FastAPI</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        const BUNDLE_NAMES = {
+            0: 'Basic Liability Only',
+            1: 'Standard Coverage',
+            2: 'Standard Plus',
+            3: 'Enhanced Coverage',
+            4: 'Comprehensive',
+            5: 'Premium Protection',
+            6: 'Family Shield',
+            7: 'Executive Suite',
+            8: 'Specialty Coverage',
+            9: 'Ultra Premium'
+        };
+        const BUNDLE_COLORS = [
+            '#64748b','#3b82f6','#06b6d4','#10b981','#22c55e',
+            '#eab308','#f97316','#ef4444','#8b5cf6','#ec4899'
+        ];
+
+        // Health check
+        async function checkHealth() {
+            const badge = document.getElementById('health-badge');
+            try {
+                const res = await fetch(API_BASE + '/health');
+                const data = await res.json();
+                if (data.status === 'healthy') {
+                    badge.textContent = `Model v${data.version} · ${data.num_features} features · ${data.model_size_mb} MB`;
+                    badge.className = 'badge healthy';
+                } else {
+                    badge.textContent = 'Model not loaded';
+                    badge.className = 'badge error';
+                }
+            } catch(e) {
+                badge.textContent = 'API Offline';
+                badge.className = 'badge error';
+            }
+        }
+        checkHealth();
+
+        // Predict
+        document.getElementById('predict-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('predict-btn');
+            btn.disabled = true;
+            btn.textContent = 'Predicting...';
+
+            const form = new FormData(e.target);
+            const data = {};
+            const INT_FIELDS = [
+                'Policy_Start_Year','Policy_Start_Week','Policy_Start_Day',
+                'Grace_Period_Extensions','Previous_Policy_Duration_Months',
+                'Adult_Dependents','Child_Dependents','Infant_Dependents',
+                'Existing_Policyholder','Previous_Claims_Filed','Years_Without_Claims',
+                'Policy_Amendments_Count','Underwriting_Processing_Days',
+                'Vehicles_on_Policy','Custom_Riders_Requested','Days_Since_Quote',
+                'Policy_Cancelled_Post_Purchase'
+            ];
+            const FLOAT_FIELDS = ['Estimated_Annual_Income'];
+
+            for (const [key, value] of form.entries()) {
+                if (INT_FIELDS.includes(key)) {
+                    data[key] = parseInt(value) || 0;
+                } else if (FLOAT_FIELDS.includes(key)) {
+                    data[key] = parseFloat(value) || 0;
+                } else {
+                    data[key] = value;
+                }
+            }
+            // Broker_ID and Employer_ID not in form → null
+            data['Broker_ID'] = null;
+            data['Employer_ID'] = null;
+
+            const t0 = performance.now();
+            try {
+                const res = await fetch(API_BASE + '/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const elapsed = ((performance.now() - t0) / 1000).toFixed(3);
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.detail || res.statusText));
+                    return;
+                }
+
+                const result = await res.json();
+                showResult(result, elapsed);
+            } catch(err) {
+                alert('Request failed: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Predict Bundle';
+            }
+        });
+
+        function showResult(result, elapsed) {
+            document.getElementById('result-placeholder').style.display = 'none';
+            document.getElementById('result-content').style.display = 'block';
+
+            const bundleId = result.predicted_bundle;
+            document.getElementById('bundle-number').textContent = bundleId;
+            document.getElementById('bundle-number').style.background = BUNDLE_COLORS[bundleId];
+            document.getElementById('bundle-label').textContent = BUNDLE_NAMES[bundleId];
+            document.getElementById('confidence').textContent = `${(result.confidence * 100).toFixed(1)}% confidence`;
+            document.getElementById('latency-info').textContent = `Inference: ${elapsed}s round-trip`;
+
+            // Probability bars
+            const container = document.getElementById('prob-bars');
+            container.innerHTML = '';
+            const probs = result.probabilities;
+            // Extract numeric probabilities
+            const probArray = [];
+            for (let i = 0; i < 10; i++) {
+                const key = Object.keys(probs).find(k => k.startsWith(`bundle_${i}`));
+                probArray.push(key ? probs[key] : 0);
+            }
+            const maxProb = Math.max(...probArray);
+
+            for (let i = 0; i < 10; i++) {
+                const pct = (probArray[i] * 100).toFixed(1);
+                const width = maxProb > 0 ? (probArray[i] / maxProb * 100) : 0;
+                const isMax = i === bundleId;
+                container.innerHTML += `
+                    <div class="prob-row ${isMax ? 'active' : ''}">
+                        <span class="prob-label">B${i}</span>
+                        <div class="prob-track">
+                            <div class="prob-fill" style="width:${width}%;background:${BUNDLE_COLORS[i]}"></div>
+                        </div>
+                        <span class="prob-val">${pct}%</span>
+                    </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
